@@ -51,10 +51,12 @@ def load_and_save(filename):
     print(f"Saved {filename} successfully.")
 
 if __name__ == '__main__':
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
     models = [
-        "app/models/drawing_model.pkl",
-        "app/models/voice_modell.pkl",
-        "app/models/Rf_edit.pkl"
+        os.path.join(PROJECT_ROOT, "backend", "models", "drawing_model.pkl"),
+        os.path.join(PROJECT_ROOT, "backend", "models", "voice_modell.pkl"),
+        os.path.join(PROJECT_ROOT, "backend", "models", "Rf_edit.pkl")
     ]
     for model in models:
         try:

@@ -10,11 +10,14 @@ from sklearn.ensemble import RandomForestClassifier
 from skimage import feature
 from sklearn.utils import resample, shuffle
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+
 print("Starting retraining script without extra dependencies...")
 
 # ----- VOICE MODEL RETRAINING -----
 print("Retraining voice model...")
-voice_data = pd.read_csv('../datasets/voice/Parkinsson disease.csv')
+voice_data = pd.read_csv(os.path.join(PROJECT_ROOT, 'datasets', 'voice', 'Parkinsson disease.csv'))
 voice_data = voice_data.drop('name', axis=1)
 
 # Basic outlier removal
@@ -50,7 +53,7 @@ X_v_train_scaled = scaler.fit_transform(X_v_train_sel)
 voice_model = RandomForestClassifier(random_state=42)
 voice_model.fit(X_v_train_scaled, y_v_train)
 
-joblib.dump(voice_model, 'app/models/voice_modell.pkl')
+joblib.dump(voice_model, os.path.join(PROJECT_ROOT, 'backend', 'models', 'voice_modell.pkl'))
 print("Saved voice_modell.pkl")
 
 # ----- DRAWING MODEL RETRAINING -----
@@ -81,7 +84,7 @@ def process_images_custom(directory_path):
         labels.append(label)
     return np.array(data), np.array(labels)
 
-train_d, train_dl = process_images_custom('../datasets/drawings/training')
+train_d, train_dl = process_images_custom(os.path.join(PROJECT_ROOT, 'datasets', 'drawings', 'training'))
 # The original code uses label encoder
 encoder = LabelEncoder()
 train_dl_enc = encoder.fit_transform(train_dl)
@@ -89,7 +92,7 @@ train_dl_enc = encoder.fit_transform(train_dl)
 drawing_model = RandomForestClassifier(random_state=2)
 drawing_model.fit(train_d, train_dl_enc)
 
-joblib.dump(drawing_model, 'app/models/drawing_model.pkl')
+joblib.dump(drawing_model, os.path.join(PROJECT_ROOT, 'backend', 'models', 'drawing_model.pkl'))
 print(f"Saved drawing_model.pkl with {len(train_d)} samples.")
 
 # ----- MULTIMODAL MODEL (Rf_edit.pkl) RETRAINING -----
@@ -120,7 +123,7 @@ if pat_min > 0 and npat_min > 0:
     multimodal_model = RandomForestClassifier(random_state=42)
     multimodal_model.fit(X_train_combined, y_train_combined)
 
-    joblib.dump(multimodal_model, 'app/models/RF_edit.pkl')
+    joblib.dump(multimodal_model, os.path.join(PROJECT_ROOT, 'backend', 'models', 'RF_edit.pkl'))
     print("Saved RF_edit.pkl")
 else:
     print("WARNING: Could not train RF_edit.pkl because couldn't align datasets (maybe one is empty).")
